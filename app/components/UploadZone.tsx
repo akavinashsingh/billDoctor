@@ -26,7 +26,6 @@ export default function UploadZone({ onFileSelect, isLoading }: UploadZoneProps)
       "image/jpeg": [".jpg", ".jpeg"],
       "image/png": [".png"],
       "image/webp": [".webp"],
-      "application/pdf": [".pdf"],
     },
     maxFiles: 1,
     onDragEnter: () => setIsDragActive(true),
@@ -68,7 +67,7 @@ export default function UploadZone({ onFileSelect, isLoading }: UploadZoneProps)
       </p>
 
       <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "20px" }}>
-        Drag & drop or click to browse · PDF, JPG, PNG supported
+        Drag & drop or click to browse · JPG, PNG, WEBP supported
       </p>
 
       <div

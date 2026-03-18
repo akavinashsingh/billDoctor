@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { AnalysisResult } from "@/app/lib/types";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY!,
+});
 
-const SYSTEM_PROMPT = `You are BillDoctor, an expert medical billing auditor specializing in Indian hospitals. 
+const SYSTEM_PROMPT = `You are BillDoctor, an expert medical billing auditor specializing in Indian hospitals.
 Your job is to analyze hospital bills for Indian patients and detect:
 1. Inflated charges (compared to CGHS rates, NPPA MRP, or standard private hospital rates in India)
 2. Duplicate billing (same procedure billed multiple times)
@@ -23,7 +26,7 @@ Indian context to apply:
 Respond ONLY with a valid JSON object matching this exact schema (no markdown, no explanation):
 {
   "hospitalName": "string",
-  "patientName": "string", 
+  "patientName": "string",
   "billDate": "string",
   "totalCharged": number,
   "verdict": "LIKELY_LEGITIMATE" | "SUSPICIOUS" | "LIKELY_FRAUDULENT",
@@ -52,21 +55,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          mimeType: mimeType,
-          data: fileBase64,
+    const result = await client.chat.completions.create({
+      model: "nvidia/nemotron-nano-12b-v2-vl:free",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${fileBase64}`,
+              },
+            },
+            {
+              type: "text",
+              text: `${SYSTEM_PROMPT}\n\nAnalyze the hospital bill in this document/image. File name: ${fileName}`,
+            },
+          ],
         },
-      },
-      {
-        text: `${SYSTEM_PROMPT}\n\nAnalyze the hospital bill in this document/image. File name: ${fileName}`,
-      },
-    ]);
+      ],
+    });
 
-    const responseText = result.response.text();
+    const responseText = result.choices[0].message.content ?? "";
 
     // Strip any accidental markdown fences
     const cleaned = responseText
