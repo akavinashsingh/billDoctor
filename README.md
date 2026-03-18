@@ -1,86 +1,132 @@
-# 🩺 BillDoctor — Hospital Bill Auditor for India
+# BillDoctor
 
-An AI-powered tool that analyzes Indian hospital bills, flags suspicious charges, and generates dispute letters — using Google Gemini's free API.
+BillDoctor is a Next.js app that audits Indian hospital bills using an AI vision model, highlights suspicious charges, and drafts a dispute letter.
 
-## Features
+## What It Does
 
-- 📄 Upload hospital bills as PDF, JPG, or PNG
-- 🔍 AI extracts and audits every line item
-- 🏷 Checks CPT/ICD-10 codes for validity
-- 💰 Compares charges against CGHS rates & NPPA caps
-- 🚨 Flags duplicate billing, upcoding, phantom charges
-- ✉️ Auto-generates a dispute letter (Consumer Protection Act 2019)
-- 🔒 Files are never stored — analyzed in-memory only
+- Upload a hospital bill image (JPG, PNG, or WEBP)
+- Analyze each billed line item in Indian healthcare context
+- Flag common issues such as duplicate billing, upcoding, and inflated consumable prices
+- Show a risk score and overall verdict
+- Generate a ready-to-edit dispute letter with actionable next steps
+- Keep processing in-memory without saving uploaded files in app storage
 
-## Tech Stack
+## Current Stack
 
-- **Next.js 15** (App Router, TypeScript)
-- **Google Gemini 2.0 Flash** (free tier: 1500 req/day)
-- **react-dropzone** for file upload
-- **framer-motion** for animations
+- Next.js 15 (App Router)
+- TypeScript
+- OpenRouter Chat Completions API
+- Model: nvidia/nemotron-nano-12b-v2-vl:free
+- react-dropzone (upload UI)
+
+## Prerequisites
+
+- Node.js 18+
+- npm
+- OpenRouter API key
 
 ## Setup
 
-### 1. Clone & install
+1. Install dependencies:
 
 ```bash
-cd billdoctor
 npm install
 ```
 
-### 2. Get a free Gemini API key
-
-1. Go to https://aistudio.google.com/app/apikey
-2. Sign in with Google
-3. Click **Create API Key**
-4. Copy the key
-
-### 3. Set up environment
+2. Create local env file:
 
 ```bash
 cp .env.local.example .env.local
 ```
 
-Edit `.env.local`:
-```
-GEMINI_API_KEY=your_actual_key_here
+3. Add your key in .env.local:
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
-### 4. Run
+4. Start development server:
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000
+Open http://localhost:3000.
 
-## How It Works
+## Available Scripts
 
-1. User uploads a hospital bill (PDF or image)
-2. File is converted to base64 in the browser
-3. Sent to `/api/analyze` (Next.js server route)
-4. Gemini 2.0 Flash reads the document natively and returns structured JSON:
-   - Verdict: Legitimate / Suspicious / Fraudulent
-   - Risk score (0–100)
-   - Per-line-item audit with expected price ranges
-   - Red flags list
-   - Ready-to-send dispute letter
-5. Results displayed with tabs: Overview, Line Items, Dispute Letter
+- npm run dev: start local development server
+- npm run build: create production build
+- npm run start: run production server
 
-## Extending for Hackathon
+## Request Flow
 
-- [ ] Add WhatsApp sharing for dispute letter
-- [ ] Add Hindi/Telugu/Tamil language support
-- [ ] Add database of CGHS rates for offline comparison
-- [ ] Add insurance claim checker
-- [ ] Add consumer court filing guide per state
-- [ ] Connect to Ayushman Bharat rate cards
+1. User selects one image file in the browser.
+2. Client converts the file to base64.
+3. Client sends payload to POST /api/analyze.
+4. Server calls OpenRouter with image + structured audit prompt.
+5. Server returns normalized JSON used by the UI tabs:
+    - Overview
+    - Line Items
+    - Dispute Letter
 
-## Free Tier Limits (Gemini)
+## API Contract
 
-| Model | RPM | Daily Requests |
-|-------|-----|----------------|
-| gemini-2.0-flash | 15 | 1,500 |
-| gemini-1.5-flash | 15 | 1,500 |
+Endpoint: POST /api/analyze
 
-More than enough for a hackathon demo!
+Request body:
+
+```json
+{
+   "fileBase64": "...",
+   "mimeType": "image/jpeg",
+   "fileName": "bill.jpg"
+}
+```
+
+Response shape:
+
+```json
+{
+   "hospitalName": "string",
+   "patientName": "string",
+   "billDate": "string",
+   "totalCharged": 0,
+   "verdict": "LIKELY_LEGITIMATE | SUSPICIOUS | LIKELY_FRAUDULENT",
+   "verdictSummary": "string",
+   "riskScore": 0,
+   "lineItems": [
+      {
+         "code": "string",
+         "description": "string",
+         "chargedAmount": 0,
+         "expectedRange": "string",
+         "status": "ok | warning | critical",
+         "reason": "string"
+      }
+   ],
+   "redFlags": ["string"],
+   "disputeLetter": "string",
+   "nextSteps": ["string"]
+}
+```
+
+## Current Limitations
+
+- PDF files are not currently accepted by the upload component.
+- Output quality depends on image clarity and model response consistency.
+- This tool is informational and not legal advice.
+
+## Project Structure
+
+- app/page.tsx: main UI and result tabs
+- app/api/analyze/route.ts: AI analysis endpoint
+- app/components/: upload, verdict, line-item table, dispute letter UI
+- app/lib/types.ts: shared request and response types
+
+## Roadmap Ideas
+
+- Add PDF parsing support
+- Add multilingual dispute letter templates
+- Add export/share options for report and letter
+- Add historical report storage (opt-in)
