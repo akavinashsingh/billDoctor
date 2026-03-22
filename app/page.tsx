@@ -76,7 +76,9 @@ export default function Home() {
         style={{
           borderBottom: "1px solid var(--border)",
           padding: "0 24px",
-          background: "var(--surface)",
+          background: "rgba(240, 244, 248, 0.90)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           position: "sticky",
           top: 0,
           zIndex: 100,
@@ -105,16 +107,36 @@ export default function Home() {
               Bill<span style={{ color: "var(--accent)" }}>Doctor</span>
             </span>
           </div>
-          <span
-            style={{
-              fontFamily: "var(--mono)",
-              fontSize: "11px",
-              color: "var(--text-muted)",
-              letterSpacing: "0.1em",
-            }}
-          >
-            INDIA HOSPITAL BILL AUDITOR
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {result && !isLoading && (
+              <button
+                onClick={handleReset}
+                style={{
+                  padding: "6px 14px",
+                  background: "var(--accent-dim)",
+                  border: "1px solid var(--accent)",
+                  borderRadius: "8px",
+                  color: "var(--accent)",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  fontFamily: "var(--mono)",
+                  transition: "all 0.15s",
+                }}
+              >
+                + New Bill
+              </button>
+            )}
+            <span
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: "11px",
+                color: "var(--text-muted)",
+                letterSpacing: "0.1em",
+              }}
+            >
+              INDIA HOSPITAL BILL AUDITOR
+            </span>
+          </div>
         </div>
       </header>
 
@@ -161,7 +183,7 @@ export default function Home() {
                 fontSize: "16px",
                 color: "var(--text-muted)",
                 maxWidth: "480px",
-                margin: "0 auto 40px",
+                margin: "0 auto 28px",
                 lineHeight: 1.7,
               }}
             >
@@ -169,6 +191,38 @@ export default function Home() {
               CGHS rates, NPPA caps, and standard Indian billing norms. Get a
               dispute letter in seconds.
             </p>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                marginBottom: "36px",
+              }}
+            >
+              {[
+                "⚡ Instant Analysis",
+                "🔒 Never Stored",
+                "📋 CGHS Rate Check",
+                "⚖️ Legal Templates",
+              ].map((f) => (
+                <span
+                  key={f}
+                  style={{
+                    padding: "5px 13px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "100px",
+                    fontSize: "12px",
+                    color: "var(--text-dim)",
+                    fontFamily: "var(--mono)",
+                  }}
+                >
+                  {f}
+                </span>
+              ))}
+            </div>
 
             <UploadZone onFileSelect={handleFileSelect} isLoading={isLoading} />
           </div>
@@ -179,47 +233,109 @@ export default function Home() {
           <div
             style={{
               textAlign: "center",
-              padding: "80px 40px",
+              padding: "64px 40px",
               background: "var(--surface)",
               border: "1px solid var(--border)",
               borderRadius: "16px",
             }}
           >
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                border: "3px solid var(--border)",
-                borderTopColor: "var(--accent)",
-                borderRadius: "50%",
-                animation: "spin 0.8s linear infinite",
-                margin: "0 auto 24px",
-              }}
-            />
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <style>{`
+              @keyframes spin { to { transform: rotate(360deg); } }
+              @keyframes ripple {
+                0% { transform: scale(1); opacity: 0.4; }
+                100% { transform: scale(1.8); opacity: 0; }
+              }
+            `}</style>
+            <div style={{ position: "relative", width: "56px", height: "56px", margin: "0 auto 28px" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  border: "2px solid var(--accent)",
+                  borderRadius: "50%",
+                  animation: "ripple 1.4s ease-out infinite",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  border: "3px solid var(--border)",
+                  borderTopColor: "var(--accent)",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite",
+                }}
+              />
+            </div>
             <h3
               style={{
                 fontFamily: "var(--display)",
                 fontSize: "20px",
                 fontWeight: 700,
-                marginBottom: "8px",
+                marginBottom: "6px",
               }}
             >
               Auditing your bill...
             </h3>
-            <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
-              Checking CPT codes, CGHS rates, and billing patterns
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", marginBottom: "6px" }}>
+              AI is cross-checking every charge against CGHS rates
             </p>
             <p
               style={{
-                marginTop: "8px",
                 fontFamily: "var(--mono)",
                 fontSize: "12px",
                 color: "var(--text-muted)",
+                marginBottom: "32px",
               }}
             >
               📄 {file?.name}
             </p>
+            <div
+              style={{
+                display: "inline-flex",
+                flexDirection: "column",
+                gap: "10px",
+                textAlign: "left",
+              }}
+            >
+              {[
+                "Reading bill structure",
+                "Verifying CPT / procedure codes",
+                "Cross-checking CGHS rate tables",
+                "Scanning for overcharges",
+                "Drafting dispute letter",
+              ].map((step, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "7px",
+                      height: "7px",
+                      borderRadius: "50%",
+                      background: "var(--accent)",
+                      flexShrink: 0,
+                      animation: "pulse 1.8s ease infinite",
+                      animationDelay: `${i * 0.35}s`,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "var(--text-muted)",
+                      fontFamily: "var(--mono)",
+                    }}
+                  >
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -259,7 +375,7 @@ export default function Home() {
 
         {/* Results */}
         {result && !isLoading && (
-          <div>
+          <div style={{ animation: "fadeUp 0.4s ease forwards" }}>
             {/* Bill summary bar */}
             <div
               style={{
@@ -410,25 +526,33 @@ export default function Home() {
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                   gap: "12px",
+                  animation: "fadeUp 0.3s ease forwards",
                 }}
               >
                 {[
                   {
+                    icon: "🏦",
                     label: "Total Billed",
                     value: `₹${result.totalCharged.toLocaleString("en-IN")}`,
                     color: "var(--text)",
+                    sub: "Charged amount",
                   },
                   {
+                    icon: "📋",
                     label: "Line Items",
                     value: result.lineItems.length,
                     color: "var(--text)",
+                    sub: "Charges reviewed",
                   },
                   {
+                    icon: "🚩",
                     label: "Flagged Items",
                     value: flaggedCount,
                     color: flaggedCount > 0 ? "var(--danger)" : "var(--accent)",
+                    sub: flaggedCount > 0 ? "Need attention" : "All clear",
                   },
                   {
+                    icon: "🎯",
                     label: "Risk Score",
                     value: `${result.riskScore}/100`,
                     color:
@@ -437,6 +561,7 @@ export default function Home() {
                         : result.riskScore > 30
                         ? "var(--warning)"
                         : "var(--accent)",
+                    sub: result.riskScore > 60 ? "High risk" : result.riskScore > 30 ? "Medium risk" : "Low risk",
                   },
                 ].map((stat, i) => (
                   <div
@@ -447,21 +572,28 @@ export default function Home() {
                       border: "1px solid var(--border)",
                       borderRadius: "12px",
                       textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "6px",
                     }}
                   >
-                    <p style={{ fontSize: "12px", color: "var(--text-muted)", fontFamily: "var(--mono)", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "24px", marginBottom: "2px" }}>{stat.icon}</span>
+                    <p style={{ fontSize: "11px", color: "var(--text-muted)", fontFamily: "var(--mono)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       {stat.label}
                     </p>
                     <p
                       style={{
                         fontFamily: "var(--display)",
-                        fontSize: "24px",
+                        fontSize: "22px",
                         fontWeight: 700,
                         color: stat.color,
+                        lineHeight: 1.1,
                       }}
                     >
                       {stat.value}
                     </p>
+                    <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{stat.sub}</p>
                   </div>
                 ))}
               </div>
@@ -485,14 +617,46 @@ export default function Home() {
       <footer
         style={{
           borderTop: "1px solid var(--border)",
-          padding: "20px 24px",
+          padding: "28px 24px",
           textAlign: "center",
-          fontSize: "12px",
-          color: "var(--text-muted)",
-          fontFamily: "var(--mono)",
         }}
       >
-        ⚕ BillDoctor is an AI tool for informational purposes. Always consult a medical billing expert for legal disputes.
+        <p
+          style={{
+            fontSize: "13px",
+            color: "var(--text-muted)",
+            fontFamily: "var(--mono)",
+            marginBottom: "10px",
+          }}
+        >
+          ⚕ BillDoctor is an AI tool for informational purposes only.
+        </p>
+        <p style={{ fontSize: "12px", color: "var(--text-muted)", opacity: 0.6 }}>
+          Always consult a qualified medical billing expert or consumer advocate for legal disputes.
+        </p>
+        <div
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {["🔒 Private by Design", "🇮🇳 India-Focused", "⚡ Powered by AI"].map((tag) => (
+            <span
+              key={tag}
+              style={{
+                fontSize: "11px",
+                color: "var(--text-muted)",
+                fontFamily: "var(--mono)",
+                opacity: 0.5,
+              }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </footer>
     </main>
   );

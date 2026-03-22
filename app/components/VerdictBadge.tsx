@@ -13,21 +13,21 @@ const VERDICT_CONFIG = {
     emoji: "✅",
     color: "var(--accent)",
     bg: "var(--accent-dim)",
-    border: "var(--accent)",
+    border: "#00d4aa",
   },
   SUSPICIOUS: {
     label: "Suspicious",
     emoji: "⚠️",
     color: "var(--warning)",
     bg: "var(--warning-dim)",
-    border: "var(--warning)",
+    border: "#f59e0b",
   },
   LIKELY_FRAUDULENT: {
     label: "Likely Fraudulent",
     emoji: "🚨",
     color: "var(--danger)",
     bg: "var(--danger-dim)",
-    border: "var(--danger)",
+    border: "#ef4444",
   },
 };
 
@@ -38,28 +38,39 @@ export default function VerdictBadge({ verdict, riskScore }: VerdictBadgeProps) 
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        gap: "16px",
-        padding: "32px",
+        gap: "20px",
+        padding: "24px 28px",
         background: config.bg,
-        border: `2px solid ${config.border}`,
-        borderRadius: "16px",
-        textAlign: "center",
+        border: `1px solid ${config.border}33`,
+        borderLeft: `4px solid ${config.border}`,
+        borderRadius: "12px",
+        flexWrap: "wrap",
       }}
     >
-      <span style={{ fontSize: "48px" }}>{config.emoji}</span>
+      <span style={{ fontSize: "42px", lineHeight: 1, flexShrink: 0 }}>{config.emoji}</span>
 
-      <div>
-        <p style={{ fontFamily: "var(--mono)", fontSize: "11px", color: config.color, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "6px" }}>
+      <div style={{ flex: 1, minWidth: "160px" }}>
+        <p
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "10px",
+            color: config.color,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            marginBottom: "4px",
+            opacity: 0.8,
+          }}
+        >
           Audit Verdict
         </p>
         <h2
           style={{
             fontFamily: "var(--display)",
-            fontSize: "28px",
+            fontSize: "clamp(22px, 4vw, 28px)",
             fontWeight: 800,
             color: config.color,
+            lineHeight: 1.1,
           }}
         >
           {config.label}
@@ -67,23 +78,37 @@ export default function VerdictBadge({ verdict, riskScore }: VerdictBadgeProps) 
       </div>
 
       {/* Risk score meter */}
-      <div style={{ width: "100%", maxWidth: "280px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-          <span style={{ fontSize: "12px", color: "var(--text-muted)", fontFamily: "var(--mono)" }}>Risk Score</span>
-          <span style={{ fontSize: "12px", color: config.color, fontFamily: "var(--mono)", fontWeight: 500 }}>
-            {riskScore}/100
+      <div style={{ minWidth: "200px", flex: "0 0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)", fontFamily: "var(--mono)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Risk Score
+          </span>
+          <span style={{ fontFamily: "var(--mono)", fontWeight: 600, color: config.color }}>
+            {riskScore}
+            <span style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 400 }}>/100</span>
           </span>
         </div>
-        <div style={{ height: "6px", background: "var(--border)", borderRadius: "3px", overflow: "hidden" }}>
+        <div
+          style={{
+            height: "8px",
+            background: "var(--border)",
+            borderRadius: "4px",
+            overflow: "hidden",
+          }}
+        >
           <div
             style={{
               height: "100%",
               width: `${riskScore}%`,
-              background: config.color,
-              borderRadius: "3px",
-              transition: "width 1s ease",
+              background: `linear-gradient(90deg, ${config.border}88, ${config.border})`,
+              borderRadius: "4px",
+              transition: "width 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "5px" }}>
+          <span style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "var(--mono)" }}>LOW</span>
+          <span style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "var(--mono)" }}>HIGH</span>
         </div>
       </div>
     </div>
