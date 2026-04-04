@@ -3,7 +3,7 @@ export type Severity = "ok" | "warning" | "critical";
 export interface BillLineItem {
   code: string;           // CPT / ICD-10 / procedure code
   description: string;    // What the hospital says it is
-  chargedAmount: number;  // In INR
+  chargedAmount: number;  // In INR..
   expectedRange?: string; // e.g. "₹800 – ₹1,500"
   status: Severity;
   reason: string;         // Why it's flagged or cleared
